@@ -3,13 +3,11 @@ import pandas as pd
 from docx import Document
 import os
 
-# Função para substituir texto nos parágrafos sem perder a formatação
 def substituir_texto_formatado(paragrafo, marcador, substituto):
     for run in paragrafo.runs:
         if marcador in run.text:
             run.text = run.text.replace(marcador, substituto)
 
-# Função para substituir texto no documento inteiro
 def substituir_texto_no_documento(doc, marcador, substituto):
     for paragrafo in doc.paragraphs:
         substituir_texto_formatado(paragrafo, marcador, substituto)
@@ -20,11 +18,10 @@ def substituir_texto_no_documento(doc, marcador, substituto):
                 for paragrafo in celula.paragraphs:
                     substituir_texto_formatado(paragrafo, marcador, substituto)
 
-# Interface do Streamlit
 st.title("Instituto Abilio Pontes")
 st.text(" Gere documentos em Word a partir de uma lista do Excel")
 
-# Carregar planilha Excel
+
 caminho_planilha = st.file_uploader("Selecione a planilha Excel:", type=["xlsx"])
 df = None
 if caminho_planilha:
@@ -32,20 +29,19 @@ if caminho_planilha:
     st.write(f"Planilha selecionada: {caminho_planilha.name}")
     st.write("Prévia da planilha:", df.head())
 
-# Carregar modelo do documento Word
+
 caminho_modelo = st.file_uploader("Selecione o modelo do documento Word:", type=["docx"])
 if caminho_modelo:
     st.write(f"Modelo Word selecionado: {caminho_modelo.name}")
 
-# Selecionar diretório de destino
 caminho_diretorio = st.text_input("Caminho do diretório para salvar os documentos:", "")
 if caminho_diretorio and not os.path.isdir(caminho_diretorio):
     st.warning("Por favor, insira um caminho de diretório válido.")
 
-# Definir formato do nome do arquivo
+
 padrao_nome = st.text_input("Formato do nome do arquivo (ex: 'TERMOS - {nome}'):", "CERTIFICADO - {nome}")
 
-# Botão para gerar documentos
+
 if st.button("Gerar Documentos"):
     if df is not None and caminho_modelo and caminho_diretorio:
         for index, row in df.iterrows():
@@ -55,7 +51,7 @@ if st.button("Gerar Documentos"):
                 if pd.notna(row[coluna]):
                     substituir_texto_no_documento(doc, f'{{{{ {coluna} }}}}', str(row[coluna]))
             
-            # Substituir os marcadores no nome do arquivo
+           
             nome_arquivo = padrao_nome
             for coluna in df.columns:
                 if f'{{{coluna}}}' in nome_arquivo:
